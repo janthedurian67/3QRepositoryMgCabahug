@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>WASD Keystrokes</title>
+  <style>
+    :root{
+      --bg:#0f1724;
+      --card:#0b1220;
+      --accent:#7c3aed; /* purple */
+      --glow: 0 6px 24px rgba(124,58,237,0.45), inset 0 1px 0 rgba(255,255,255,0.02);
+      --muted: #9aa4b2;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      background: radial-gradient(1200px 600px at 10% 10%, rgba(124,58,237,0.08), transparent 6%),
+                  radial-gradient(1000px 500px at 90% 90%, rgba(14,165,233,0.03), transparent 6%),
+                  var(--bg);
+      color:#e6eef8;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      padding:24px;
+    }
+
+    .card{
+      width:420px;
+      max-width:96vw;
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border:1px solid rgba(255,255,255,0.04);
+      border-radius:16px;
+      padding:28px;
+      box-shadow: 0 8px 30px rgba(2,6,23,0.6);
+    }
+
+    h1{margin:0 0 6px 0;font-size:18px;letter-spacing:0.4px}
+    p.lead{margin:0 0 18px 0;color:var(--muted);font-size:13px}
+
+    /* WASD diamond layout */
+    .wasd-wrap{
+      width:260px;height:260px;margin:18px auto 8px;display:grid;grid-template-columns:80px 80px 80px;grid-template-rows:80px 80px 80px;gap:12px;justify-items:center;align-items:center;
+    }
+    /* place W at (2,1) A at (1,2) S at (2,2) D at (3,2) */
+    .key{
+      width:100%;height:100%;display:flex;align-items:center;justify-content:center;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border:1px solid rgba(255,255,255,0.04);user-select:none;cursor:pointer;
+      font-weight:700;font-size:22px;color:#cfe6ff;transition:transform 160ms cubic-bezier(.2,.9,.3,1), box-shadow 160ms, background 160ms;
+    }
+    .key.small{font-size:14px;font-weight:600;color:var(--muted)}
+
+    .key[data-key="W"]{grid-column:2;grid-row:1}
+    .key[data-key="A"]{grid-column:1;grid-row:2}
+    .key[data-key="S"]{grid-column:2;grid-row:2}
+    .key[data-key="D"]{grid-column:3;grid-row:2}
+
+    .key:active{transform:translateY(2px) scale(0.995)}
+
+    /* active glow state */
+    .key.active{
+      transform:translateY(-6px) scale(1.03);
+      box-shadow: var(--glow);
+      background: linear-gradient(180deg, rgba(124,58,237,0.14), rgba(124,58,237,0.06));
+    }
+
+    /* subtle keyboard hint */
+    .hint{display:flex;gap:10px;align-items:center;justify-content:center;margin-top:12px;color:var(--muted);font-size:13px}
+    .circle{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,0.03);display:inline-block}
+
+    footer{margin-top:14px;color:var(--muted);font-size:12px;text-align:center}
+
+    @media (max-width:420px){
+      .wasd-wrap{width:200px;height:200px;grid-template-columns:64px 64px 64px;grid-template-rows:64px 64px 64px}
+    }
+  </style>
+</head>
+<body>
+  <div class="card" role="application" aria-label="W A S D keystroke visualizer">
+    <h1>WASD Keystroke Visualizer</h1>
+    <p class="lead">Press any of the keys <strong>W</strong>, <strong>A</strong>, <strong>S</strong>, <strong>D</strong> (or tap/click them) to see them glow.</p>
+
+    <div class="wasd-wrap" id="wasd">
+      <div class="key" data-key="W" tabindex="0" aria-pressed="false" role="button">W</div>
+      <div class="key" data-key="A" tabindex="0" aria-pressed="false" role="button">A</div>
+      <div class="key" data-key="S" tabindex="0" aria-pressed="false" role="button">S</div>
+      <div class="key" data-key="D" tabindex="0" aria-pressed="false" role="button">D</div>
+    </div>
+
+    <div class="hint"><span class="circle" aria-hidden></span> Try holding multiple keys — they glow independently.</div>
+    <footer>Built with plain HTML/CSS/JS • Mobile-friendly</footer>
+  </div>
+
+  <script>
+    (function(){
+      const map = { 'w':'W','a':'A','s':'S','d':'D' };
+      const keys = document.querySelectorAll('.key');
+      const lookup = {};
+      keys.forEach(k=> lookup[k.dataset.key]=k);
+
+      function setActive(keyChar){
+        const el = lookup[keyChar.toUpperCase()];
+        if(!el) return;
+        if(!el.classList.contains('active')){
+          el.classList.add('active');
+          el.setAttribute('aria-pressed','true');
+        }
+      }
+      function clearActive(keyChar){
+        const el = lookup[keyChar.toUpperCase()];
+        if(!el) return;
+        el.classList.remove('active');
+        el.setAttribute('aria-pressed','false');
+      }
+
+      // keyboard
+      window.addEventListener('keydown', e=>{
+        const k = (e.key || '').toLowerCase();
+        if(!map[k]) return;
+        e.preventDefault();
+        setActive(map[k]);
+      }, {passive:false});
+
+      window.addEventListener('keyup', e=>{
+        const k = (e.key || '').toLowerCase();
+        if(!map[k]) return;
+        clearActive(map[k]);
+      });
+
+      // if window loses focus, clear all (prevents stuck state)
+      window.addEventListener('blur', ()=>{
+        Object.keys(lookup).forEach(k=> clearActive(k));
+      });
+
+      // pointer (mouse/touch) support: pointerdown to simulate press, pointerup + leave to release
+      keys.forEach(el=>{
+        el.addEventListener('pointerdown', ev=>{
+          ev.preventDefault();
+          const key = el.dataset.key;
+          setActive(key);
+          // also focus for keyboard accessibility
+          el.focus();
+        });
+        const release = ev=>{
+          const key = el.dataset.key;
+          clearActive(key);
+        };
+        el.addEventListener('pointerup', release);
+        el.addEventListener('pointercancel', release);
+        el.addEventListener('pointerleave', release);
+
+        // keyboard on the element (Enter/Space should toggle)
+        el.addEventListener('keydown', ev=>{
+          if(ev.key === ' ' || ev.key === 'Enter'){
+            ev.preventDefault();
+            setActive(el.dataset.key);
+          }
+        });
+        el.addEventListener('keyup', ev=>{
+          if(ev.key === ' ' || ev.key === 'Enter'){
+            clearActive(el.dataset.key);
+          }
+        });
+      });
+
+      // allow multiple keys pressed simultaneously
+      // nothing special needed — code handles independent add/remove
+
+    })();
+  </script>
+</body>
+</html>
