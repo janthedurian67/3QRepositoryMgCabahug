@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Club Application Form</title>
+  <style>
+    input:focus, select:focus, textarea:focus {
+      border: 2px solid blue;
+      background-color: #eef;
+    }
+
+    .error {
+      border: 2px solid red;
+      background-color: #ffd6d6;
+    }
+
+    fieldset {
+      margin-bottom: 15px;
+    }
+  </style>
+  
+  <script>
+    function confirmSubmit() {
+      return confirm("Are you sure you want to submit your application?");
+    }
+
+    function checkEmpty(input) {
+      if (input.value.trim() === "") {
+        input.classList.add("error");
+      } else {
+        input.classList.remove("error");
+      }
+    }
+  </script>
+</head>
+<body>
+
+  <form method="post" action="submit" onsubmit="return confirmSubmit()">
+
+    <fieldset>
+      <legend>Personal Information</legend>
+
+      <label>Student ID:
+        <input type="number" required onblur="checkEmpty(this)">
+      </label><br><br>
+
+      <label>Full Name:
+        <input type="text" required onblur="checkEmpty(this)">
+      </label><br><br>
+
+      <label>Birthday:
+        <input type="date" required onblur="checkEmpty(this)">
+      </label><br><br>
+
+      <label>Email Address:
+        <input type="email" required onblur="checkEmpty(this)">
+      </label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Application Details</legend>
+
+      <label>Mobile Phone:
+        <input type="text" required onblur="checkEmpty(this)">
+      </label><br><br>
+
+      <label>Grade Level:
+        <select required onblur="checkEmpty(this)">
+          <option value="">Select</option>
+          <option value="7">Grade 7</option>
+          <option value="8">Grade 8</option>
+          <option value="9">Grade 9</option>
+          <option value="10">Grade 10</option>
+        </select>
+      </label><br><br>
+
+      <label>Intern / Extern:</label><br>
+      <label><input type="radio" name="type" value="intern" required> Intern</label><br>
+      <label><input type="radio" name="type" value="extern" required> Extern</label><br><br>
+
+      <label>Preferred Club:
+        <select required onblur="checkEmpty(this)">
+          <option value="">Select</option>
+          <option value="science">Science Club</option>
+          <option value="math">Math Club</option>
+          <option value="english">English Club</option>
+          <option value="filipino">Filipino Club</option>
+          <option value="basketball">Basketball Club</option>
+          <option value="football">Football Club</option>
+        </select>
+      </label>
+    </fieldset>
+
+    <label>Why do you want to join?</label><br>
+    <textarea required rows="4" cols="40" onblur="checkEmpty(this)"></textarea><br><br>
+
+    <input type="submit" value="Submit">
+    <input type="reset" value="Reset">
+
+  </form>
+
+</body>
+</html>
